@@ -8,8 +8,10 @@ env:
   AWS_REGION:     ap-southeast-1
   ECR_REPOSITORY: lambda-listen-s3-creation
   ROLE_TO_ASSUME: arn:aws:iam::858070140421:role/github-action-ecr-power-wtf
+  ROLE_SESSION_NAME: deplayTestLambda
 
 permissions:
+  id-token: write
   contents: read
 
 jobs:
@@ -26,6 +28,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v1
       with:
         role-to-assume: ${{ env.ROLE_TO_ASSUME }}
+        role-session-name: $ {{ env.ROLE_SESSION_NAME }}
         aws-region: ${{ env.AWS_REGION }}
 
     - name: Login to Amazon ECR
