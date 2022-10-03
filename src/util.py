@@ -62,7 +62,7 @@ def fetch_secret(secret_name, region_name="ap-southeast-1"):
     # end if
 # end def
 
-def ensure_deduplication(msg, engine, table_name='queue_msg_hash', queue_name=None, schema='default'):
+def ensure_deduplication(msg, engine, table_name='queue_msg_hash', queue_name=None, schema=None):
     '''Ensure the message has not been processed before
 
     Args:
