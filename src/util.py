@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import hashlib
 import base64
@@ -13,17 +14,31 @@ from sqlalchemy import MetaData
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import sessionmaker
 
+import logging
+logger = logging.getLogger('root')
+logger.setLevel(logging.INFO)
+
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+
 def fetch_secret(secret_name, region_name="ap-southeast-1"):
     '''Fetch secret from AWS secret manager'''
 
     # Create a Secrets Manager client
     session = boto3.session.Session()
+    logger.info('initiate a secret manager client')
     client = session.client(
         service_name='secretsmanager',
         region_name=region_name
     )
 
     # sample code copied from aws secret manager ...
+
+    logger.info('getting secret ...')
     try:
         get_secret_value_response = client.get_secret_value(
             SecretId=secret_name
@@ -139,6 +154,7 @@ def get_db_engine(credential=None, env_var_name='DB_SECRET_NAME'):
     # end if
 
     # build connection string
+    logger.info('build connection string')
     _engine = credential.get('engine', '').lower()
     if _engine == 'postgres':
         protocol = 'postgresql'
@@ -150,6 +166,7 @@ def get_db_engine(credential=None, env_var_name='DB_SECRET_NAME'):
     conn_str = '{protocol}://{username}:{password}@{host}:{port}/{dbClusterIdentifier}'.format(
         protocol=protocol, **credential
     ) # end conn_str
+    logger.info(conn_str)
 
     # connect to database
     engine = sqlalchemy.create_engine(conn_str)
