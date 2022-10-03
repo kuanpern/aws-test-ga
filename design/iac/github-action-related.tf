@@ -53,7 +53,7 @@ resource "aws_iam_role" "github-action-ecr-role" {
         "Action": "sts:AssumeRoleWithWebIdentity",
         "Condition": {
           "ForAllValues:StringLike": {
-            "token.actions.githubusercontent.com:sub": "repo:kuanpern/aws-test-ga:ref:refs/heads/main"
+            "token.actions.githubusercontent.com:sub": "repo:kuanpern/aws-test-ga:*"
           }
         }
       }

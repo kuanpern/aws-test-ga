@@ -3,9 +3,22 @@ import uuid
 import boto3
 from src.util import ensure_deduplication, get_db_engine
 
+import logging
+import sys
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
 def handler(event, context):
 
     # Ensure deduplicated message
+    logger.info('ensure message not duplicated')
     det = ensure_deduplication(msg=event, engine=get_db_engine(),
         table_name = os.getenv('TABLE_NAME'),
         queue_name = os.getenv('QUEUE_NAME'),
@@ -17,6 +30,7 @@ def handler(event, context):
             'error' : 'the event has already been processed'
         } # end
     # end if
+    print('new event')
 
     # Enhancement:
     # Get metadata about S3 file size to override the CPU and RAM for ECS
