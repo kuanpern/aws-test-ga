@@ -163,7 +163,7 @@ def get_db_engine(credential=None, env_var_name='DB_SECRET_NAME'):
     else:
         raise ValueError('engine not supported: %s' % ())
     # end if
-    conn_str = '{protocol}://{username}:{password}@{host}:{port}/{dbClusterIdentifier}'.format(
+    conn_str = '{protocol}://{username}:{password}@{host}:{port}/{database}'.format(
         protocol=protocol, **credential
     ) # end conn_str
     logger.info(conn_str)
