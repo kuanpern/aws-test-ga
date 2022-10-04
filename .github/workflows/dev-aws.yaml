@@ -61,7 +61,7 @@ jobs:
         aws lambda update-function-code \
           --function-name ${{ env.LAMBDA_NAME }} \
           --image-uri $ECR_REGISTRY/$ECR_REPOSITORY@$IMAGE_SHA \
-          --publish true
+          --publish
 
 
 
