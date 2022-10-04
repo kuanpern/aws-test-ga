@@ -10,6 +10,7 @@ env:
   ECR_REPOSITORY: lambda-listen-s3-creation-dev
   ROLE_TO_ASSUME: arn:aws:iam::858070140421:role/github-action-ecr-power-wtf
   ROLE_SESSION_NAME: pushTestLambdaSession
+  LAMBDA_NAME      : test-container-01
 
 permissions:
   id-token: write
@@ -46,5 +47,19 @@ jobs:
         # push it to ECR so that it can
         # be deployed to ECS.
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        IMAGE_SHA=`docker inspect --format='{{index .RepoDigests 0}}' $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG | awk 'BEGIN{FS="@"}{print $2}'`
+        echo "::image sha=$IMAGE_SHA"
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+    - name: Update Lambda image and publish new version
+      id: update-lambda
+      run: |
+        aws lambda update-function-code \
+          --function_name $LAMBDA_NAME \
+          --image-uri $ECR_REGISTRY/$ECR_REPOSITORY@IMAGE_SHA \
+          --publish true
+
+
+
+
