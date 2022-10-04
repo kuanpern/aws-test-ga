@@ -50,7 +50,7 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
         IMAGE_SHA=`docker inspect --format='{{index .RepoDigests 0}}' $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG | awk 'BEGIN{FS="@"}{print $2}'`
-        echo "::set-output image_sha=$IMAGE_SHA"
+        echo "::set-output name=image_sha::$IMAGE_SHA"
 
     - name: Update Lambda image and publish new version
       id: update-lambda
