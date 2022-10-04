@@ -55,8 +55,7 @@ jobs:
     - name: Update Lambda image and publish new version
       id: update-lambda
       run: |
-        aws lambda update-function-code \
-          --function_name $LAMBDA_NAME \
+        aws lambda update-function-code --function_name $LAMBDA_NAME \
           --image-uri $ECR_REGISTRY/$ECR_REPOSITORY@IMAGE_SHA \
           --publish true
 
