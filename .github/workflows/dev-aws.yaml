@@ -48,16 +48,17 @@ jobs:
         # be deployed to ECS.
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         IMAGE_SHA=`docker inspect --format='{{index .RepoDigests 0}}' $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG | awk 'BEGIN{FS="@"}{print $2}'`
-        echo "::image sha=$IMAGE_SHA"
+        echo "::set-output image_sha=$IMAGE_SHA"
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
     - name: Update Lambda image and publish new version
       id: update-lambda
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_SHA: ${{ steps.build-image.outputs.image_sha }}
       run: |
-        aws lambda update-function-code --function_name $LAMBDA_NAME \
-          --image-uri $ECR_REGISTRY/$ECR_REPOSITORY@IMAGE_SHA \
-          --publish true
+        aws lambda update-function-code --function_name ${{ env.LAMBDA_NAME }} --image-uri $ECR_REGISTRY/$ECR_REPOSITORY@$IMAGE_SHA --publish true
 
 
 
